@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hũ Nợ Tương Trợ - Cùng Nhau Gỡ Rối</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Hũ Tương Trợ Cộng Đồng - Gỡ Rối Tài Chính</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Canvas Confetti cho hiệu ứng bom nổ -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -15,28 +13,23 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-between p-4">
 
-    <!-- Container chính -->
     <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col min-h-[85vh]">
         
-        <!-- Header -->
         <header class="bg-gradient-to-r from-red-600 to-orange-600 p-6 text-center text-white relative">
             <h1 class="text-2xl font-black tracking-wider uppercase">Hũ Tương Trợ 💣</h1>
-            <p class="text-xs text-orange-100 mt-1 opacity-90">Lan tỏa sự tử tế - Gỡ rối tài chính</p>
+            <p class="text-xs text-orange-100 mt-1 opacity-90">Lan tỏa sự tử tế - Gỡ rối tài chính minh bạch</p>
             <button onclick="resetRole()" class="absolute top-4 right-4 text-[10px] bg-black/30 hover:bg-black/50 px-2 py-1 rounded-full transition text-slate-200">Đổi vai trò</button>
         </header>
 
-        <!-- Dynamic Content Area -->
         <main id="app-content" class="p-5 flex-1 flex flex-col justify-between">
-            <!-- Nội dung render bằng JS -->
+            <!-- Render bằng JS -->
         </main>
 
-        <!-- Footer -->
         <footer class="bg-slate-950/50 py-3 px-6 text-center text-xs text-slate-500 border-t border-slate-800/60">
             Hệ thống Tương trợ Cộng đồng &copy; 2026
         </footer>
     </div>
 
-    <!-- JavaScript Xử Lý Toàn Bộ App -->
     <script>
         let currentRole = localStorage.getItem('app_role') || null;
         let hasAgreedTerms = localStorage.getItem('app_terms') === 'true';
@@ -45,15 +38,16 @@
             {
                 id: 1,
                 name: "Nguyễn Văn A",
-                cccd: "079203xxxxxx (Đã duyệt ✅)",
-                stk: "MB Bank - 0987xxxxxx",
+                cccd: "079203xxxxxx (Đã quét khuôn mặt eKYC ✅)",
+                phone: "0912xxxxxx",
+                stk: "MB Bank - 0987xxxxxx (Chính chủ)",
                 reason: "Mắc kẹt tiền nhà trọ tháng này do kẹt vốn buôn bán nhỏ.",
-                target: 500000,
-                current: 400000,
-                createdAt: new Date().getTime(),
-                status: 'active',
+                target: 1500000,
+                current: 1200000,
+                createdAt: new Date().getTime() - (1 * 24 * 60 * 60 * 1000), // Tạo cách đây 1 ngày
+                status: 'active', // active, success, expired
                 donors: [
-                    { name: "Trần Quân", amount: 400000, phone: "0912xxxxxx" }
+                    { name: "Mạnh thường quân", amount: 1200000, phone: "0901xxxxxx" }
                 ],
                 connectedPhones: []
             }
@@ -79,23 +73,28 @@
             }
         }
 
+        // --- BẢNG ĐIỀU KHOẢN 6 ĐIỀU ---
         function renderTermsScreen() {
             return `
                 <div class="space-y-4 flex flex-col h-full justify-between">
                     <div>
-                        <h2 class="text-lg font-bold text-orange-500 mb-2 flex items-center gap-2">
+                        <h2 class="text-base font-bold text-orange-500 mb-2 flex items-center gap-2">
                             <span>📜</span> ĐIỀU KHOẢN & CAM KẾT HOẠT ĐỘNG
                         </h2>
-                        <div class="space-y-2.5 text-xs text-slate-300 max-h-[48vh] overflow-y-auto pr-1 bg-slate-950/40 p-3 rounded-xl border border-slate-800">
-                            <p>1. <strong>Phí lọc hồ sơ (50k):</strong> Phí 50k khởi tạo hũ là phí thẩm định, <strong>không hoàn trả</strong> dưới mọi hình thức.</p>
-                            <p>2. <strong>Trách nhiệm pháp lý:</strong> Chủ web chịu hoàn toàn trách nhiệm trước pháp luật nếu lợi dụng web lừa đảo.</p>
-                            <p>3. <strong>Quyền thu hồi/đổi hũ (72h):</strong> Người cho vay có quyền đổi người nhận hoặc nhận lại số tiền nếu sau 72 giờ hũ chưa đầy.</p>
-                            <p>4. <strong>Kết nối nhân văn:</strong> Sau khi bom nổ, người cho và người nhận có thể tùy chọn chia sẻ số điện thoại để liên lạc, cảm ơn trực tiếp.</p>
+                        <p class="text-[11px] text-slate-400 mb-2">Vui lòng đọc kỹ 6 điều khoản cam kết trước khi truy cập ứng dụng:</p>
+                        
+                        <div class="space-y-2 text-[11px] text-slate-300 max-h-[46vh] overflow-y-auto pr-1 bg-slate-950/40 p-3 rounded-xl border border-slate-800 leading-relaxed">
+                            <p>1. <strong>Quyền thu hồi/đổi hũ (42h):</strong> Người cho vay có quyền đổi người nhận hoặc nhận lại số tiền nếu sau 42 giờ mà hũ vẫn chưa đầy.</p>
+                            <p>2. <strong>Xác thực định danh:</strong> Người xin bắt buộc cung cấp CCCD, SĐT và quét khuôn mặt (eKYC) để tránh lừa đảo, kèm STK ngân hàng chính chủ nhận tiền.</p>
+                            <p>3. <strong>Trách nhiệm pháp lý người xin:</strong> Người xin phải chịu hoàn toàn trách nhiệm trước pháp luật nếu có dấu hiệu lừa đảo.</p>
+                            <p>4. <strong>Giới hạn xin:</strong> Mỗi CCCD xin tối đa 2 triệu đồng/lần và tối đa 3 lần trong suốt đời app. Bắt buộc tích hợp quét khuôn mặt chống giả mạo.</p>
+                            <p>5. <strong>Tâm thế người cho:</strong> Người cho tùy hỷ cho bao nhiêu tùy tâm, xem như tiền tích phước, hoàn toàn tự nguyện.</p>
+                            <p>6. <strong>Phí lọc & Trách nhiệm chủ web:</strong> Phí 50k là phí lọc người xin, không hoàn trả dưới mọi hình thức. Chủ web nhận 50k này chịu hoàn toàn trách nhiệm trước pháp luật nếu lợi dụng web lừa đảo.</p>
                         </div>
                     </div>
 
-                    <button onclick="acceptTerms()" class="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3.5 rounded-xl shadow-lg transition active:scale-95 text-sm">
-                        Tôi đã đọc và Đồng ý cam kết ✅
+                    <button onclick="acceptTerms()" class="w-full bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 text-white font-bold py-3.5 rounded-xl shadow-lg transition active:scale-95 text-xs">
+                        Tôi đã đọc và Đồng ý toàn bộ cam kết ✅
                     </button>
                 </div>
             `;
@@ -109,27 +108,27 @@
 
         function renderRoleSelector() {
             return `
-                <div class="flex flex-col justify-center items-center h-full py-10 space-y-6 text-center">
-                    <div class="space-y-2">
-                        <h2 class="text-xl font-bold text-white">Bạn tham gia với tư cách gì?</h2>
-                        <p class="text-xs text-slate-400">Khóa cố định trên thiết bị này.</p>
+                <div class="flex flex-col justify-center items-center h-full py-8 space-y-5 text-center">
+                    <div class="space-y-1">
+                        <h2 class="text-lg font-bold text-white">Bạn tham gia với tư cách gì?</h2>
+                        <p class="text-xs text-slate-400">Thiết bị sẽ khóa cố định 1 vai trò duy nhất.</p>
                     </div>
 
-                    <div class="w-full space-y-4">
-                        <button onclick="selectRole('borrower')" class="w-full bg-slate-800 border border-slate-700 p-5 rounded-2xl flex items-center justify-between group transition">
+                    <div class="w-full space-y-3">
+                        <button onclick="selectRole('borrower')" class="w-full bg-slate-800 border border-slate-700 p-4 rounded-2xl flex items-center justify-between group transition">
                             <div class="text-left">
-                                <div class="font-bold text-orange-400 text-base">Người Mang Nợ (Người Xin)</div>
-                                <div class="text-xs text-slate-400 mt-0.5">Tạo hũ & Theo dõi tiến trình nhận tiền</div>
+                                <div class="font-bold text-orange-400 text-sm">Người Mang Nợ (Người Xin)</div>
+                                <div class="text-[11px] text-slate-400 mt-0.5">Nộp 50k phí lọc, nhập thông tin & theo dõi tiến trình</div>
                             </div>
-                            <span class="text-2xl">🛡️</span>
+                            <span class="text-xl">🛡️</span>
                         </button>
 
-                        <button onclick="selectRole('donor')" class="w-full bg-slate-800 border border-slate-700 p-5 rounded-2xl flex items-center justify-between group transition">
+                        <button onclick="selectRole('donor')" class="w-full bg-slate-800 border border-slate-700 p-4 rounded-2xl flex items-center justify-between group transition">
                             <div class="text-left">
-                                <div class="font-bold text-emerald-400 text-base">Người Trả Nợ (Thùng Công Đức)</div>
-                                <div class="text-xs text-slate-400 mt-0.5">Gieo duyên qua QR TKNH tự động</div>
+                                <div class="font-bold text-emerald-400 text-sm">Người Trả Nợ (Thùng Công Đức)</div>
+                                <div class="text-[11px] text-slate-400 mt-0.5">Tùy hỷ gieo duyên, kết nối ngân hàng tự động trừ</div>
                             </div>
-                            <span class="text-2xl">🎁</span>
+                            <span class="text-xl">🎁</span>
                         </button>
                     </div>
                 </div>
@@ -151,6 +150,7 @@
             }
         }
 
+        // --- DASHBOARD NGƯỜI MANG NỢ ---
         function renderBorrowerDashboard() {
             let myHu = hũNợList[0];
             let percent = Math.min(100, Math.round((myHu.current / myHu.target) * 100));
@@ -160,66 +160,83 @@
                     <span class="text-slate-300">📞 SĐT Ân Nhân: <b>${phone}</b></span>
                     <a href="tel:${phone}" class="bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded font-bold">Gọi ngay</a>
                 </div>
-            `).join('') || '<p class="text-xs text-slate-500">Chưa có kết nối số điện thoại nào.</p>';
+            `).join('') || '<p class="text-xs text-slate-500">Chưa có kết nối SĐT (Sẽ hiện khi hũ nổ bom thành công).</p>';
 
             return `
-                <div class="space-y-4 flex flex-col justify-between h-full">
+                <div class="space-y-3 flex flex-col justify-between h-full">
                     <div>
                         <div class="flex justify-between items-center mb-2">
-                            <h2 class="font-bold text-sm text-orange-400 flex items-center gap-1.5">
-                                <span>📊</span> Tiến Trình Nhận Tiền Của Bạn
+                            <h2 class="font-bold text-xs text-orange-400 flex items-center gap-1">
+                                <span>📊</span> Tiến Trình Nhận Tiền Hũ Của Bạn
                             </h2>
-                            <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-medium">Đã duyệt STK ✅</span>
+                            <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-medium">eKYC & STK Đã Duyệt ✅</span>
                         </div>
 
-                        <div class="bg-slate-800/80 border border-slate-700 p-4 rounded-2xl space-y-3">
+                        <!-- Thanh tiến trình -->
+                        <div class="bg-slate-800/80 border border-slate-700 p-3.5 rounded-2xl space-y-2.5">
                             <div class="flex justify-between text-xs">
-                                <span class="text-slate-400">Đã nhận / Mục tiêu:</span>
+                                <span class="text-slate-400">Đã nhận / Mục tiêu (Tối đa 2tr):</span>
                                 <span class="font-bold text-white">${myHu.current.toLocaleString()}đ / ${myHu.target.toLocaleString()}đ (${percent}%)</span>
                             </div>
-                            <div class="w-full bg-slate-950 h-3 rounded-full overflow-hidden p-0.5 border border-slate-700">
+                            <div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-700">
                                 <div class="bg-gradient-to-r from-orange-500 to-emerald-400 h-full rounded-full transition-all duration-500" style="width: ${percent}%"></div>
                             </div>
                             <div class="text-[11px] text-slate-400 flex justify-between pt-1 border-t border-slate-700/50">
-                                <span>Trạng thái: <strong class="${myHu.status === 'success' ? 'text-emerald-400' : 'text-orange-400'}">${myHu.status === 'success' ? '💥 ĐÃ NỔ BOM THÀNH CÔNG' : 'Đang gom quỹ'}</strong></span>
-                                <span class="text-emerald-400 font-semibold">STK: ${myHu.stk}</span>
+                                <span>⏳ Thời hạn (42h): <strong class="text-orange-400">Còn 38 giờ</strong></span>
+                                <span class="text-emerald-400 font-semibold">${myHu.status === 'success' ? '💥 ĐÃ ĐỦ TIỀN - TỰ ĐỘNG KHÓA HŨ' : 'Đang nhận quỹ'}</span>
                             </div>
                         </div>
 
-                        <!-- Danh sách số điện thoại ân nhân kết nối -->
-                        <div class="mt-3 bg-slate-950/50 border border-slate-800 p-3 rounded-xl">
-                            <div class="text-xs font-bold text-slate-300 mb-2">🤝 SĐT Ân Nhân Đã Kết Nối:</div>
-                            <div class="max-h-28 overflow-y-auto space-y-1">
-                                ${connectionsHTML}
-                            </div>
+                        <!-- Nhật ký xin xỏ hằng ngày -->
+                        <div class="mt-2.5 space-y-1.5">
+                            <label class="text-[11px] font-semibold text-slate-300">📝 Nhật ký xin xỏ hôm nay (Cập nhật mỗi ngày):</label>
+                            <textarea id="daily-log" rows="1.5" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-slate-200 focus:outline-none focus:border-orange-500" placeholder="Viết vài dòng hoàn cảnh hôm nay để đẩy hũ lên top..."></textarea>
+                            <button onclick="submitLog()" class="w-full bg-slate-800 text-orange-400 border border-orange-500/30 text-[11px] font-semibold py-1.5 rounded-xl transition">Đăng Nhật Ký 🚀</button>
+                        </div>
+
+                        <!-- Danh sách kết nối SĐT -->
+                        <div class="mt-2.5 bg-slate-950/50 border border-slate-800 p-2.5 rounded-xl">
+                            <div class="text-[11px] font-bold text-slate-300 mb-1">🤝 SĐT Ân Nhân Kết Nối:</div>
+                            <div class="max-h-20 overflow-y-auto space-y-1">${connectionsHTML}</div>
                         </div>
                     </div>
 
-                    <button onclick="openCreateHuModal()" class="w-full bg-slate-800 hover:bg-slate-750 text-orange-400 border border-orange-500/30 text-xs font-semibold py-2.5 rounded-xl transition">
-                        + Tạo Hũ Mới (Phí lọc 50k)
+                    <button onclick="openCreateHuModal()" class="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-2.5 rounded-xl text-xs shadow">
+                        + Tạo Hũ Mới (Nộp 50k phí lọc không hoàn trả) 🛡️
                     </button>
                 </div>
             `;
         }
 
-        function openCreateHuModal() {
-            let name = prompt("Nhập họ và tên thật (trên CCCD):");
-            if(!name) return;
-            let cccd = prompt("Nhập số CCCD chính chủ:");
-            if(!cccd) return;
-            let stk = prompt("Nhập Ngân hàng + Số tài khoản nhận tiền:");
-            if(!stk) return;
-            let target = parseInt(prompt("Nhập số tiền cần xin (Tối đa 2.000.000đ):", "500000"));
-            if(isNaN(target) || target > 2000000) return alert("Số tiền không hợp lệ!");
-            let reason = prompt("Nhập hoàn cảnh khó khăn của bạn:");
+        function submitLog() {
+            let log = document.getElementById('daily-log').value;
+            if(!log) return alert("Vui lòng nhập nội dung!");
+            alert("Đã cập nhật nhật ký thành công lên hệ thống!");
+            document.getElementById('daily-log').value = "";
+        }
 
-            let confirmPay = confirm(`Xác nhận nộp 50.000đ phí lọc hồ sơ (không hoàn trả) để kích hoạt hũ?`);
-            if(!confirmPay) return;
+        function openCreateHuModal() {
+            let name = prompt("1. Nhập Họ và Tên thật (khớp CCCD):");
+            if(!name) return;
+            let cccd = prompt("2. Nhập số CCCD (Hệ thống yêu cầu quét khuôn mặt eKYC xác thực):");
+            if(!cccd) return;
+            let phone = prompt("3. Nhập Số Điện Thoại liên lạc chính chủ:");
+            if(!phone) return;
+            let stk = prompt("4. Nhập Ngân hàng + Số tài khoản nhận tiền chính chủ:");
+            if(!stk) return;
+            let target = parseInt(prompt("5. Nhập số tiền cần xin (Tối đa 2.000.000đ):", "1000000"));
+            if(isNaN(target) || target > 2000000) return alert("Mỗi lần xin tối đa 2.000.000đ!");
+            let reason = prompt("6. Nêu hoàn cảnh khó khăn thực tế:");
+
+            // Thanh toán 50k phí lọc về STK chủ máy chủ (chủ web)
+            let pay50k = confirm(`⚠️ XÁC NHẬN NỘP PHÍ LỌC:\n\n- Phí 50.000đ lọc hồ sơ sẽ chuyển về TK Máy chủ (STK của bạn).\n- Phí này KHÔNG HOÀN TRẢ dưới mọi hình thức.\n\nBấm [OK] để quét VietQR nộp 50k kích hoạt hũ.`);
+            if(!pay50k) return;
 
             let newHu = {
                 id: Date.now(),
                 name: name,
-                cccd: cccd + " (Đã duyệt ✅)",
+                cccd: cccd + " (Đã quét khuôn mặt eKYC ✅)",
+                phone: phone,
                 stk: stk,
                 reason: reason,
                 target: target,
@@ -232,22 +249,24 @@
 
             hũNợList.unshift(newHu);
             localStorage.setItem('hũ_nợ_list', JSON.stringify(hũNợList));
-            alert("🎉 Khởi tạo thành công! Tiến trình nhận tiền đã sẵn sàng.");
+            alert("🎉 Khởi tạo hũ thành công! Đã ghi nhận phí 50k vào TK máy chủ. Hũ đã xuất hiện trên Thùng Công Đức.");
             renderApp();
         }
 
+        // --- DASHBOARD NGƯỜI TRẢ NỢ (THÙNG CÔNG ĐỨC) ---
         function renderDonorDashboard() {
             let listHTML = hũNợList.map(hũ => {
                 let percent = Math.min(100, Math.round((hũ.current / hũ.target) * 100));
+                let isFull = hũ.current >= hũ.target;
                 return `
-                    <div class="bg-slate-800/80 border border-slate-700/60 p-4 rounded-2xl space-y-2.5">
+                    <div class="bg-slate-800/80 border border-slate-700/60 p-3.5 rounded-2xl space-y-2">
                         <div class="flex justify-between items-start">
                             <div>
-                                <div class="font-bold text-white text-sm flex items-center gap-1">
+                                <div class="font-bold text-white text-xs flex items-center gap-1">
                                     ${hũ.name} 
-                                    <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">✔ CCCD thật</span>
+                                    <span class="text-[9px] text-emerald-400 bg-emerald-500/10 px-1 py-0.5 rounded">✔ CCCD & eKYC</span>
                                 </div>
-                                <div class="text-[11px] text-slate-400 mt-0.5">${hũ.reason}</div>
+                                <div class="text-[10px] text-slate-400 mt-0.5">${hũ.reason}</div>
                             </div>
                             <span class="text-xs font-bold text-orange-400">${percent}%</span>
                         </div>
@@ -256,11 +275,12 @@
                             <div class="bg-gradient-to-r from-orange-500 to-emerald-400 h-full rounded-full" style="width: ${percent}%"></div>
                         </div>
 
-                        <div class="flex justify-between items-center text-[11px] text-slate-400 pt-1">
+                        <div class="flex justify-between items-center text-[10px] text-slate-400 pt-1">
                             <span>Đã nhận: <b class="text-white">${hũ.current.toLocaleString()}đ</b> / ${hũ.target.toLocaleString()}đ</span>
-                            <button onclick="payViaBankQR(${hũ.id})" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-3 py-1.5 rounded-lg text-xs shadow transition active:scale-95">
-                                Gieo Duyên (QR TKNH) 💳
-                            </button>
+                            ${isFull ? 
+                                '<span class="text-emerald-400 font-bold">Hũ Đã Đủ (Khóa)</span>' : 
+                                `<button onclick="payToHostAccount(${hũ.id})" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-2.5 py-1 rounded-lg shadow transition">Gieo Duyên (Trừ TKNH) 💳</button>`
+                            }
                         </div>
                     </div>
                 `;
@@ -270,54 +290,61 @@
                 <div class="space-y-3 flex flex-col h-full justify-between">
                     <div>
                         <div class="flex justify-between items-center mb-2">
-                            <h2 class="font-bold text-sm text-emerald-400 flex items-center gap-1.5">
-                                <span>🎁</span> Thùng Công Đức (Tương Trợ)
+                            <h2 class="font-bold text-xs text-emerald-400 flex items-center gap-1">
+                                <span>🎁</span> Thùng Công Đức (Tương Trợ Tùy Hỷ)
                             </h2>
-                            <span class="text-[10px] text-slate-400">Quét QR tự động trừ tiền</span>
+                            <span class="text-[10px] text-slate-400">Quy định 42 giờ</span>
                         </div>
 
-                        <div class="space-y-3 max-h-[55vh] overflow-y-auto pr-1">
+                        <div class="space-y-2.5 max-h-[55vh] overflow-y-auto pr-1">
                             ${listHTML}
                         </div>
                     </div>
 
-                    <div class="bg-slate-950/60 border border-slate-800 p-3 rounded-xl text-[11px] text-slate-400">
-                        💡 <strong>Tính năng mới:</strong> Khi bom nổ hoàn thành, bạn có thể tùy chọn chia sẻ số điện thoại liên lạc để người nhận gửi lời cảm ơn trực tiếp!
+                    <div class="bg-slate-950/60 border border-slate-800 p-2.5 rounded-xl text-[10px] text-slate-400">
+                        💡 <strong>Lưu ý:</strong> Tiền từ tài khoản ngân hàng của bạn sẽ chuyển về TK máy chủ (chủ web). Sau 42h hũ không đầy, bạn có quyền nhận lại tiền hoặc chuyển sang hũ khác. Đủ 100% hũ tự khóa và nổ bom về người nhận!
                     </div>
                 </div>
             `;
         }
 
-        function payViaBankQR(id) {
+        // Tích hợp TKNH người cho trừ tiền chuyển về TK máy chủ
+        function payToHostAccount(id) {
             let hu = hũNợList.find(h => h.id === id);
-            let donorName = prompt("Nhập tên hiển thị của bạn:", "Mạnh thường quân");
-            let amount = parseInt(prompt("Nhập số tiền muốn chuyển (VNĐ):", "100000"));
+            if(hu.current >= hu.target) return alert("Hũ này đã đủ tiền và tự động khóa!");
+
+            let donorName = prompt("Nhập tên hiển thị của bạn (hoặc để trống ẩn danh):", "Mạnh thường quân");
+            let donorPhone = prompt("Nhập Số Điện Thoại của bạn (để kết nối sau khi hũ nổ bom):", "09");
+            let amount = parseInt(prompt("Nhập số tiền muốn gieo duyên từ tài khoản ngân hàng (VNĐ):", "50000"));
+            
             if(!amount || isNaN(amount)) return;
 
-            let confirmQR = confirm(`📲 Đang tạo VietQR chuyển khoản tự động...\n\n- Số tiền: ${amount.toLocaleString()}đ\n- Nội dung: Gieo duyên hũ ${hu.id}\n\nBấm [OK] để xác nhận đã thanh toán thành công.`);
+            let confirmBank = confirm(`💳 XÁC NHẬN GIAO DỊCH TỪ TKNH:\n\n- Số tiền: ${amount.toLocaleString()}đ\n- Chuyển về: TK Máy Chủ (Chủ Web)\n- Mục đích: Gieo duyên hỗ trợ hũ ${hu.id}\n\nBấm [OK] để xác nhận ứng dụng ngân hàng tự động trừ tiền.`);
             
-            if(confirmQR) {
+            if(confirmBank) {
                 hu.current += amount;
-                
-                // Kiểm tra nếu chạm mốc đủ tiền -> Kích hoạt bom nổ & Tùy chọn SĐT
-                if (hu.current >= hu.target && hu.status !== 'success') {
+                hu.donors.push({
+                    name: donorName || "Ẩn danh",
+                    amount: amount,
+                    phone: donorPhone || "Không cung cấp"
+                });
+
+                // Kiểm tra nếu đủ hoặc vượt mục tiêu -> Khóa hũ, tự động bom nổ chuyển tiền về STK người xin
+                if (hu.current >= hu.target) {
                     hu.current = hu.target;
                     hu.status = 'success';
                     triggerBombEffect();
                     
-                    alert(`🎉 Hũ của ${hu.name} đã đủ 100%!\n💥 KÍCH HOẠT BƠM NỔ: Tự động chuyển toàn bộ tiền vào STK ${hu.stk}`);
+                    alert(`🎉 Hũ của ${hu.name} đã đủ 100% (${hu.target.toLocaleString()}đ)!\n💥 TỰ ĐỘNG KHÓA HŨ: Tiền từ TK máy chủ đã tự động giải ngân chuyển thẳng về STK: ${hu.stk}`);
 
-                    // Hỏi ý kiến chia sẻ SĐT
-                    let sharePhone = confirm("❤️ Bạn có muốn chia sẻ Số Điện Thoại của mình cho người nhận này để họ gửi lời cảm ơn trực tiếp không?");
-                    if (sharePhone) {
-                        let phoneInput = prompt("Nhập số điện thoại liên lạc của bạn:", "09");
-                        if (phoneInput) {
-                            hu.connectedPhones.push(phoneInput);
-                            alert("Đã gửi số điện thoại kết nối thành công tới người nhận!");
-                        }
+                    // Hỏi xác nhận 2 bên có muốn lấy SĐT của nhau không
+                    let wantPhone = confirm(`📞 Hũ đã hoàn thành! Bạn có muốn chia sẻ Số Điện Thoại (${donorPhone}) cho người nhận (${hu.name}) để họ liên lạc cảm ơn trực tiếp không?`);
+                    if(wantPhone) {
+                        hu.connectedPhones.push(donorPhone);
+                        alert("Đã kết nối SĐT thành công với người nhận!");
                     }
                 } else {
-                    alert(`❤️ Giao dịch thành công! Đã đóng góp ${amount.toLocaleString()}đ vào hũ.`);
+                    alert(`❤️ Giao dịch thành công! Đã trừ ${amount.toLocaleString()}đ từ TKNH của bạn chuyển về quỹ máy chủ.`);
                 }
 
                 localStorage.setItem('hũ_nợ_list', JSON.stringify(hũNợList));
