@@ -1,0 +1,111 @@
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(express.json());
+app.use(cors());
+
+// Phục vụ giao diện tĩnh từ thư mục public
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Cơ sở dữ liệu lưu trên máy chủ
+let db = {
+    settings: {
+        adminPin: "1234",
+        totalFilterFees: 50000, 
+    },
+    hũNợList: [
+        {
+            id: 1,
+            name: "Nguyễn Văn A",
+            cccd: "079203xxxxxx (Đã quét khuôn mặt eKYC ✅)",
+            phone: "0912xxxxxx",
+            stk: "MB Bank - 0987xxxxxx (Chính chủ)",
+            reason: "Mắc kẹt tiền nhà trọ tháng này do kẹt vốn buôn bán nhỏ.",
+            target: 1500000,
+            current: 1200000,
+            createdAt: Date.now() - 86400000,
+            status: 'active',
+            donors: [
+                { name: "Mạnh thường quân", amount: 1200000, phone: "0901xxxxxx" }
+            ],
+            connectedPhones: []
+        }
+    ]
+};
+
+// --- CÁC ĐƯỜNG DẪN API ---
+
+// 1. Lấy danh sách hũ
+app.get('/api/funds', (req, res) => {
+    res.json(db.hũNợList);
+});
+
+// 2. Tạo hũ mới (Nộp 50k phí lọc)
+app.post('/api/funds', (req, res) => {
+    const { name, cccd, phone, stk, target, reason } = req.body;
+    
+    const newHu = {
+        id: Date.now(),
+        name,
+        cccd: cccd + " (Đã quét khuôn mặt eKYC ✅)",
+        phone,
+        stk,
+        reason,
+        target: parseInt(target),
+        current: 0,
+        createdAt: Date.now(),
+        status: 'active',
+        donors: [],
+        connectedPhones: []
+    };
+
+    db.hũNợList.unshift(newHu);
+    db.settings.totalFilterFees += 50000;
+
+    res.json({ success: true, message: "Khởi tạo hũ thành công!", hu: newHu });
+});
+
+// 3. Gieo duyên / Đóng góp vào hũ
+app.post('/api/funds/:id/donate', (req, res) => {
+    const fundId = parseInt(req.params.id);
+    const { donorName, donorPhone, amount } = req.body;
+
+    const hu = db.hũNợList.find(h => h.id === fundId);
+    if (!hu) return res.status(404).json({ success: false, message: "Không tìm thấy hũ!" });
+    if (hu.status === 'success') return res.status(400).json({ success: false, message: "Hũ này đã hoàn thành!" });
+
+    hu.current += parseInt(amount);
+    hu.donors.push({
+        name: donorName || "Ẩn danh",
+        amount: parseInt(amount),
+        phone: donorPhone || "Không cung cấp"
+    });
+
+    if (hu.current >= hu.target) {
+        hu.current = hu.target;
+        hu.status = 'success';
+    }
+
+    res.json({ success: true, hu });
+});
+
+// 4. Đăng nhập Admin Quản Trị
+app.post('/api/admin/login', (req, res) => {
+    const { pin } = req.body;
+    if (pin === db.settings.adminPin) {
+        res.json({ 
+            success: true, 
+            settings: db.settings, 
+            totalFunds: db.hũNợList.length 
+        });
+    } else {
+        res.status(401).json({ success: false, message: "Sai mã PIN quản trị!" });
+    }
+});
+
+app.listen(PORT, () => {
+    console.log(`🚀 Máy chủ đang chạy tại cổng ${PORT}`);
+});
