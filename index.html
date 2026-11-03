@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hũ Nợ Tương Trợ - Cùng Nhau Gỡ Rối</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Canvas Confetti cho hiệu ứng bom nổ -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-between p-4">
+
+    <!-- Container chính -->
+    <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col min-h-[85vh]">
+        
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-red-600 to-orange-600 p-6 text-center text-white relative">
+            <h1 class="text-2xl font-black tracking-wider uppercase">Hũ Tương Trợ 💣</h1>
+            <p class="text-xs text-orange-100 mt-1 opacity-90">Lan tỏa sự tử tế - Gỡ rối tài chính</p>
+            <button onclick="resetRole()" class="absolute top-4 right-4 text-[10px] bg-black/30 hover:bg-black/50 px-2 py-1 rounded-full transition text-slate-200">Đổi vai trò</button>
+        </header>
+
+        <!-- Dynamic Content Area -->
+        <main id="app-content" class="p-5 flex-1 flex flex-col justify-between">
+            <!-- Nội dung render bằng JS -->
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-slate-950/50 py-3 px-6 text-center text-xs text-slate-500 border-t border-slate-800/60">
+            Hệ thống Tương trợ Cộng đồng &copy; 2026
+        </footer>
+    </div>
+
+    <!-- JavaScript Xử Lý Toàn Bộ App -->
+    <script>
+        let currentRole = localStorage.getItem('app_role') || null;
+        let hasAgreedTerms = localStorage.getItem('app_terms') === 'true';
+
+        let hũNợList = JSON.parse(localStorage.getItem('hũ_nợ_list')) || [
+            {
+                id: 1,
+                name: "Nguyễn Văn A",
+                cccd: "079203xxxxxx (Đã xác thực eKYC ✅)",
+                stk: "MB Bank - 0987xxxxxx",
+                reason: "Mắc kẹt tiền nhà trọ tháng này do kẹt vốn buôn bán nhỏ.",
+                target: 1500000,
+                current: 1200000,
+                createdAt: new Date().getTime() - (2 * 24 * 60 * 60 * 1000),
+                status: 'active',
+                dailyLogs: [
+                    { date: "Hôm qua", content: "Cảm ơn mọi người đã giúp đỡ, mình còn thiếu chút nữa thôi." }
+                ]
+            },
+            {
+                id: 2,
+                name: "Trần Thị B",
+                cccd: "092301xxxxxx (Đã xác thực eKYC ✅)",
+                stk: "VCB - 0123xxxxxx",
+                reason: "Đóng tiền viện phí bất ngờ cho người nhà.",
+                target: 2000000,
+                current: 2000000,
+                createdAt: new Date().getTime() - (4 * 24 * 60 * 60 * 1000),
+                status: 'success',
+                dailyLogs: []
+            }
+        ];
+
+        function renderApp() {
+            const container = document.getElementById('app-content');
+            
+            if (!hasAgreedTerms) {
+                container.innerHTML = renderTermsScreen();
+                return;
+            }
+
+            if (!currentRole) {
+                container.innerHTML = renderRoleSelector();
+                return;
+            }
+
+            if (currentRole === 'borrower') {
+                container.innerHTML = renderBorrowerDashboard();
+            } else if (currentRole === 'donor') {
+                container.innerHTML = renderDonorDashboard();
+            }
+        }
+
+        function renderTermsScreen() {
+            return `
+                <div class="space-y-4 flex flex-col h-full justify-between">
+                    <div>
+                        <h2 class="text-lg font-bold text-orange-500 mb-2 flex items-center gap-2">
+                            <span>📜</span> ĐIỀU KHOẢN & CAM KẾT HOẠT ĐỘNG
+                        </h2>
+                        <p class="text-xs text-slate-400 mb-3">Vui lòng đọc kỹ 5 điều khoản quan trọng dưới đây trước khi tham gia cộng đồng:</p>
+                        
+                        <div class="space-y-3 text-xs text-slate-300 max-h-[50vh] overflow-y-auto pr-1 bg-slate-950/40 p-3 rounded-xl border border-slate-800">
+                            <div class="flex gap-2">
+                                <span class="font-bold text-orange-400">1.</span>
+                                <p><strong>Quyền thu hồi/đổi hũ:</strong> Người cho vay có quyền đổi người nhận hoặc nhận lại số tiền nếu sau 72 giờ (3 ngày) mà hũ vẫn chưa đầy.</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <span class="font-bold text-orange-400">2.</span>
+                                <p><strong>Xác thực danh tính:</strong> Người xin phải bắt buộc cung cấp CCCD và quét khuôn mặt (eKYC) để tránh lừa đảo, kèm STK ngân hàng chính chủ để tự động giải ngân khi đủ tiền.</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <span class="font-bold text-orange-400">3.</span>
+                                <p><strong>Trách nhiệm pháp lý:</strong> Người xin phải chịu hoàn toàn trách nhiệm trước pháp luật nếu có bất kỳ hành vi gian lận hoặc dấu hiệu lừa đảo nào.</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <span class="font-bold text-orange-400">4.</span>
+                                <p><strong>Giới hạn xin trợ giúp:</strong> Mỗi CCCD chỉ được xin tối đa <strong>2 triệu đồng</strong> cho 1 lần lập hũ, và tối đa <strong>3 lần</strong> trong suốt quá trình sử dụng ứng dụng.</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <span class="font-bold text-orange-400">5.</span>
+                                <p><strong>Tinh thần tự nguyện:</strong> Người cho hoàn toàn tùy hỷ, cho bao nhiêu tùy tâm và xem như tiền tích phước, không có sự ép buộc.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="acceptTerms()" class="w-full bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition active:scale-95 text-sm">
+                        Tôi đã đọc, hiểu và Đồng ý ✅
+                    </button>
+                </div>
+            `;
+        }
+
+        function acceptTerms() {
+            hasAgreedTerms = true;
+            localStorage.setItem('app_terms', 'true');
+            renderApp();
+        }
+
+        function renderRoleSelector() {
+            return `
+                <div class="flex flex-col justify-center items-center h-full py-10 space-y-6 text-center">
+                    <div class="space-y-2">
+                        <h2 class="text-xl font-bold text-white">Bạn tham gia với tư cách gì?</h2>
+                        <p class="text-xs text-slate-400">Lựa chọn này sẽ được khóa cố định trên thiết bị của bạn.</p>
+                    </div>
+
+                    <div class="w-full space-y-4">
+                        <button onclick="selectRole('borrower')" class="w-full bg-slate-800 hover:bg-slate-750 border border-slate-700 p-5 rounded-2xl flex items-center justify-between group transition active:scale-98">
+                            <div class="text-left">
+                                <div class="font-bold text-orange-400 text-base">Người Mang Nợ (Người Xin)</div>
+                                <div class="text-xs text-slate-400 mt-0.5">Tạo hũ kêu gọi tương trợ tài chính</div>
+                            </div>
+                            <span class="text-2xl group-hover:translate-x-1 transition">🛡️</span>
+                        </button>
+
+                        <button onclick="selectRole('donor')" class="w-full bg-slate-800 hover:bg-slate-750 border border-slate-700 p-5 rounded-2xl flex items-center justify-between group transition active:scale-98">
+                            <div class="text-left">
+                                <div class="font-bold text-emerald-400 text-base">Người Trả Nợ (Thùng Công Đức)</div>
+                                <div class="text-xs text-slate-400 mt-0.5">Gieo duyên, giúp đỡ người khó khăn</div>
+                            </div>
+                            <span class="text-2xl group-hover:translate-x-1 transition">🎁</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectRole(role) {
+            currentRole = role;
+            localStorage.setItem('app_role', role);
+            renderApp();
+        }
+
+        function resetRole() {
+            const pin = prompt("Nhập mã bảo vệ để đổi vai trò (Mặc định: 1234):");
+            if (pin === "1234") {
+                localStorage.removeItem('app_role');
+                currentRole = null;
+                renderApp();
+            } else if (pin !== null) {
+                alert("Mã PIN không đúng!");
+            }
+        }
+
+        function renderBorrowerDashboard() {
+            let myHu = hũNợList[0];
+            let timeLeft = "68 giờ 12 phút";
+
+            return `
+                <div class="space-y-4 flex flex-col justify-between h-full">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <h2 class="font-bold text-sm text-orange-400 flex items-center gap-1.5">
+                                <span>📌</span> Hũ Tương Trợ Của Bạn
+                            </h2>
+                            <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-medium">Đã xác thực CCCD & eKYC ✅</span>
+                        </div>
+
+                        <div class="bg-slate-800/70 border border-slate-700/60 p-4 rounded-2xl space-y-3">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-400">Tiến độ gom (Tối đa 2tr):</span>
+                                <span class="font-bold text-white">${myHu.current.toLocaleString()}đ / ${myHu.target.toLocaleString()}đ</span>
+                            </div>
+                            <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden">
+                                <div class="bg-gradient-to-r from-orange-500 to-emerald-500 h-full rounded-full" style="width: ${(myHu.current / myHu.target) * 100}%"></div>
+                            </div>
+                            <div class="flex justify-between items-center text-[11px] text-slate-400 pt-1 border-t border-slate-700/50">
+                                <span>⏳ Thời hạn hũ (72h): <strong class="text-orange-400">${timeLeft}</strong></span>
+                                <span class="text-emerald-400 font-semibold">STK: MB - 0987xxxx</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 space-y-2">
+                            <label class="text-xs font-semibold text-slate-300">📝 Nhật ký xin xỏ hôm nay (Cập nhật mỗi ngày):</label>
+                            <textarea id="daily-log-input" rows="2" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500" placeholder="Hôm nay bạn muốn nhắn nhủ điều gì tới mạnh thường quân?"></textarea>
+                            <button onclick="submitDailyLog()" class="w-full bg-slate-800 hover:bg-slate-750 text-orange-400 border border-orange-500/30 text-xs font-semibold py-2 rounded-xl transition">
+                                Đăng Nhật Ký Mới 🚀
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-orange-500/10 border border-orange-500/20 p-3 rounded-xl text-[11px] text-orange-300 leading-relaxed">
+                        ⚠️ <strong>Lưu ý quy định:</strong> Bạn còn lại <strong>2 lần</strong> khởi tạo hũ trong suốt vòng đời app. Hành vi gian lận thông tin sẽ bị khóa tài khoản vĩnh viễn và chịu trách nhiệm trước pháp luật.
+                    </div>
+                </div>
+            `;
+        }
+
+        function submitDailyLog() {
+            const val = document.getElementById('daily-log-input').value;
+            if(!val) return alert("Vui lòng nhập nội dung nhật ký!");
+            alert("Đã cập nhật nhật ký thành công! Hũ của bạn đã được đẩy lên trang chủ.");
+            document.getElementById('daily-log-input').value = "";
+        }
+
+        function renderDonorDashboard() {
+            let listHTML = hũNợList.map(hũ => {
+                let percent = Math.min(100, Math.round((hũ.current / hũ.target) * 100));
+                return `
+                    <div class="bg-slate-800/80 border border-slate-700/60 p-4 rounded-2xl space-y-2.5">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="font-bold text-white text-sm flex items-center gap-1">
+                                    ${hũ.name} 
+                                    <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">✔ CCCD</span>
+                                </div>
+                                <div class="text-[11px] text-slate-400 mt-0.5">${hũ.reason}</div>
+                            </div>
+                            <span class="text-xs font-bold text-orange-400">${percent}%</span>
+                        </div>
+
+                        <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden">
+                            <div class="bg-gradient-to-r from-orange-500 to-emerald-400 h-full rounded-full" style="width: ${percent}%"></div>
+                        </div>
+
+                        <div class="flex justify-between items-center text-[11px] text-slate-400 pt-1">
+                            <span>Đã góp: <b class="text-white">${hũ.current.toLocaleString()}đ</b> / ${hũ.target.toLocaleString()}đ</span>
+                            <button onclick="openDonateModal(${hũ.id})" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-3 py-1.5 rounded-lg text-xs shadow transition active:scale-95">
+                                Gieo duyên 🙏
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="space-y-3 flex flex-col h-full justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <h2 class="font-bold text-sm text-emerald-400 flex items-center gap-1.5">
+                                <span>🎁</span> Thùng Công Đức (Tương Trợ)
+                            </h2>
+                            <span class="text-[10px] text-slate-400">Chọn hũ tùy tâm</span>
+                        </div>
+
+                        <div class="space-y-3 max-h-[52vh] overflow-y-auto pr-1">
+                            ${listHTML}
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950/60 border border-slate-800 p-3 rounded-xl text-[11px] text-slate-400">
+                        💡 <strong>Quyền lợi người cho:</strong> Sau 72h hũ không đầy, bạn có thể rút lại tiền hoặc chuyển sang hũ khác đang cần gấp. Tiền cho đi là phúc đức tích lũy!
+                    </div>
+                </div>
+            `;
+        }
+
+        function openDonateModal(id) {
+            let amount = prompt("Bạn muốn tùy hỷ đóng góp bao nhiêu tiền? (VNĐ):", "50000");
+            if (!amount || isNaN(amount)) return;
+            
+            let hu = hũNợList.find(h => h.id === id);
+            if (hu) {
+                hu.current += parseInt(amount);
+                if (hu.current >= hu.target) {
+                    hu.current = hu.target;
+                    hu.status = 'success';
+                    triggerBombEffect();
+                    alert(`🎉 Chúc mừng! Hũ của ${hu.name} đã đủ 100%!\n💥 HỆ THỐNG KÍCH HOẠT BƠM NỔ: Đã tự động chuyển toàn bộ tiền vào STK: ${hu.stk}`);
+                } else {
+                    alert(`❤️ Cảm ơn bạn đã gieo duyên ${parseInt(amount).toLocaleString()}đ vào hũ của ${hu.name}!`);
+                }
+                localStorage.setItem('hũ_nợ_list', JSON.stringify(hũNợList));
+                renderApp();
+            }
+        }
+
+        function triggerBombEffect() {
+            confetti({
+                particleCount: 150,
+                spread: 80,
+                origin: { y: 0.6 }
+            });
+        }
+
+        renderApp();
+    </script>
+</body>
+</html>
