@@ -55,18 +55,6 @@
                 dailyLogs: [
                     { date: "Hôm qua", content: "Cảm ơn mọi người đã giúp đỡ, mình còn thiếu chút nữa thôi." }
                 ]
-            },
-            {
-                id: 2,
-                name: "Trần Thị B",
-                cccd: "092301xxxxxx (Đã xác thực eKYC ✅)",
-                stk: "VCB - 0123xxxxxx",
-                reason: "Đóng tiền viện phí bất ngờ cho người nhà.",
-                target: 2000000,
-                current: 2000000,
-                createdAt: new Date().getTime() - (4 * 24 * 60 * 60 * 1000),
-                status: 'success',
-                dailyLogs: []
             }
         ];
 
@@ -97,34 +85,34 @@
                         <h2 class="text-lg font-bold text-orange-500 mb-2 flex items-center gap-2">
                             <span>📜</span> ĐIỀU KHOẢN & CAM KẾT HOẠT ĐỘNG
                         </h2>
-                        <p class="text-xs text-slate-400 mb-3">Vui lòng đọc kỹ 5 điều khoản quan trọng dưới đây trước khi tham gia cộng đồng:</p>
+                        <p class="text-xs text-slate-400 mb-3">Vui lòng đọc kỹ các quy định pháp lý và nguyên tắc hoạt động trước khi tham gia:</p>
                         
-                        <div class="space-y-3 text-xs text-slate-300 max-h-[50vh] overflow-y-auto pr-1 bg-slate-950/40 p-3 rounded-xl border border-slate-800">
+                        <div class="space-y-3 text-xs text-slate-300 max-h-[48vh] overflow-y-auto pr-1 bg-slate-950/40 p-3 rounded-xl border border-slate-800">
                             <div class="flex gap-2">
                                 <span class="font-bold text-orange-400">1.</span>
-                                <p><strong>Quyền thu hồi/đổi hũ:</strong> Người cho vay có quyền đổi người nhận hoặc nhận lại số tiền nếu sau 72 giờ (3 ngày) mà hũ vẫn chưa đầy.</p>
+                                <p><strong>Phí lọc hồ sơ (50k):</strong> Phí 50k khi khởi tạo hũ là phí thẩm định và lọc người xin thực tế, <strong>không hoàn trả</strong> dưới mọi hình thức.</p>
                             </div>
                             <div class="flex gap-2">
                                 <span class="font-bold text-orange-400">2.</span>
-                                <p><strong>Xác thực danh tính:</strong> Người xin phải bắt buộc cung cấp CCCD và quét khuôn mặt (eKYC) để tránh lừa đảo, kèm STK ngân hàng chính chủ để tự động giải ngân khi đủ tiền.</p>
+                                <p><strong>Trách nhiệm của Chủ Web:</strong> Chủ web nhận khoản phí 50k này sẽ chịu hoàn toàn trách nhiệm trước pháp luật nếu có hành vi lợi dụng web để lừa đảo.</p>
                             </div>
                             <div class="flex gap-2">
                                 <span class="font-bold text-orange-400">3.</span>
-                                <p><strong>Trách nhiệm pháp lý:</strong> Người xin phải chịu hoàn toàn trách nhiệm trước pháp luật nếu có bất kỳ hành vi gian lận hoặc dấu hiệu lừa đảo nào.</p>
+                                <p><strong>Quyền thu hồi/đổi hũ (72h):</strong> Người cho vay có quyền đổi người nhận hoặc nhận lại số tiền nếu sau 72 giờ (3 ngày) mà hũ vẫn chưa đầy.</p>
                             </div>
                             <div class="flex gap-2">
                                 <span class="font-bold text-orange-400">4.</span>
-                                <p><strong>Giới hạn xin trợ giúp:</strong> Mỗi CCCD chỉ được xin tối đa <strong>2 triệu đồng</strong> cho 1 lần lập hũ, và tối đa <strong>3 lần</strong> trong suốt quá trình sử dụng ứng dụng.</p>
+                                <p><strong>Xác thực định danh thật:</strong> Người xin bắt buộc cung cấp CCCD thật, quét khuôn mặt eKYC và STK ngân hàng chính chủ để tự động giải ngân.</p>
                             </div>
                             <div class="flex gap-2">
                                 <span class="font-bold text-orange-400">5.</span>
-                                <p><strong>Tinh thần tự nguyện:</strong> Người cho hoàn toàn tùy hỷ, cho bao nhiêu tùy tâm và xem như tiền tích phước, không có sự ép buộc.</p>
+                                <p><strong>Giới hạn xin trợ giúp:</strong> Mỗi CCCD chỉ được xin tối đa <strong>2 triệu đồng</strong>/lần và tối đa <strong>3 lần</strong> trong suốt đời app. Gian lận chịu trách nhiệm trước pháp luật.</p>
                             </div>
                         </div>
                     </div>
 
                     <button onclick="acceptTerms()" class="w-full bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition active:scale-95 text-sm">
-                        Tôi đã đọc, hiểu và Đồng ý ✅
+                        Tôi đã đọc, hiểu và Đồng ý cam kết ✅
                     </button>
                 </div>
             `;
@@ -183,54 +171,85 @@
         }
 
         function renderBorrowerDashboard() {
-            let myHu = hũNợList[0];
-            let timeLeft = "68 giờ 12 phút";
-
             return `
                 <div class="space-y-4 flex flex-col justify-between h-full">
                     <div>
                         <div class="flex justify-between items-center mb-3">
                             <h2 class="font-bold text-sm text-orange-400 flex items-center gap-1.5">
-                                <span>📌</span> Hũ Tương Trợ Của Bạn
+                                <span>📌</span> Khởi Tạo Hũ Xin Trợ Giúp
                             </h2>
-                            <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-medium">Đã xác thực CCCD & eKYC ✅</span>
+                            <span class="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full font-medium">Phí lọc: 50.000đ (Không hoàn lại)</span>
                         </div>
 
-                        <div class="bg-slate-800/70 border border-slate-700/60 p-4 rounded-2xl space-y-3">
-                            <div class="flex justify-between text-xs">
-                                <span class="text-slate-400">Tiến độ gom (Tối đa 2tr):</span>
-                                <span class="font-bold text-white">${myHu.current.toLocaleString()}đ / ${myHu.target.toLocaleString()}đ</span>
+                        <!-- Form nhập thông tin thật -->
+                        <div class="bg-slate-800/70 border border-slate-700/60 p-3.5 rounded-2xl space-y-2.5 text-xs">
+                            <div>
+                                <label class="text-slate-300 font-medium">Họ và tên thật (trên CCCD):</label>
+                                <input type="text" id="real-name" placeholder="Ví dụ: Nguyễn Văn A" class="w-full mt-1 bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-100">
                             </div>
-                            <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden">
-                                <div class="bg-gradient-to-r from-orange-500 to-emerald-500 h-full rounded-full" style="width: ${(myHu.current / myHu.target) * 100}%"></div>
+                            <div>
+                                <label class="text-slate-300 font-medium">Số CCCD chính chủ:</label>
+                                <input type="text" id="real-cccd" placeholder="Nhập số CCCD 12 số" class="w-full mt-1 bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-100">
                             </div>
-                            <div class="flex justify-between items-center text-[11px] text-slate-400 pt-1 border-t border-slate-700/50">
-                                <span>⏳ Thời hạn hũ (72h): <strong class="text-orange-400">${timeLeft}</strong></span>
-                                <span class="text-emerald-400 font-semibold">STK: MB - 0987xxxx</span>
+                            <div>
+                                <label class="text-slate-300 font-medium">Số tài khoản nhận tiền (STK + Ngân hàng):</label>
+                                <input type="text" id="real-stk" placeholder="Ví dụ: MB Bank - 0987654321" class="w-full mt-1 bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-100">
                             </div>
-                        </div>
-
-                        <div class="mt-4 space-y-2">
-                            <label class="text-xs font-semibold text-slate-300">📝 Nhật ký xin xỏ hôm nay (Cập nhật mỗi ngày):</label>
-                            <textarea id="daily-log-input" rows="2" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500" placeholder="Hôm nay bạn muốn nhắn nhủ điều gì tới mạnh thường quân?"></textarea>
-                            <button onclick="submitDailyLog()" class="w-full bg-slate-800 hover:bg-slate-750 text-orange-400 border border-orange-500/30 text-xs font-semibold py-2 rounded-xl transition">
-                                Đăng Nhật Ký Mới 🚀
-                            </button>
+                            <div>
+                                <label class="text-slate-300 font-medium">Số tiền cần xin (Tối đa 2.000.000đ):</label>
+                                <input type="number" id="real-target" placeholder="Ví dụ: 1500000" class="w-full mt-1 bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-100">
+                            </div>
+                            <div>
+                                <label class="text-slate-300 font-medium">Hoàn cảnh / Lý do xin trợ giúp:</label>
+                                <textarea id="real-reason" rows="2" placeholder="Nêu rõ hoàn cảnh thực tế..." class="w-full mt-1 bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-100"></textarea>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="bg-orange-500/10 border border-orange-500/20 p-3 rounded-xl text-[11px] text-orange-300 leading-relaxed">
-                        ⚠️ <strong>Lưu ý quy định:</strong> Bạn còn lại <strong>2 lần</strong> khởi tạo hũ trong suốt vòng đời app. Hành vi gian lận thông tin sẽ bị khóa tài khoản vĩnh viễn và chịu trách nhiệm trước pháp luật.
-                    </div>
+                    <button onclick="submitNewHu()" class="w-full bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 text-white font-bold py-3 rounded-xl shadow transition text-xs">
+                        Xác nhận nộp phí 50k & Đăng Hũ Ngay 🚀
+                    </button>
                 </div>
             `;
         }
 
-        function submitDailyLog() {
-            const val = document.getElementById('daily-log-input').value;
-            if(!val) return alert("Vui lòng nhập nội dung nhật ký!");
-            alert("Đã cập nhật nhật ký thành công! Hũ của bạn đã được đẩy lên trang chủ.");
-            document.getElementById('daily-log-input').value = "";
+        function submitNewHu() {
+            let name = document.getElementById('real-name').value;
+            let cccd = document.getElementById('real-cccd').value;
+            let stk = document.getElementById('real-stk').value;
+            let target = parseInt(document.getElementById('real-target').value);
+            let reason = document.getElementById('real-reason').value;
+
+            if(!name || !cccd || !stk || !target || !reason) {
+                alert("Vui lòng điền đầy đủ thông tin chính xác!");
+                return;
+            }
+            if(target > 2000000) {
+                alert("Mỗi lần xin tối đa chỉ được 2.000.000đ theo quy định!");
+                return;
+            }
+
+            // Giả lập chuyển khoản quét QR 50k phí lọc
+            let confirmPay = confirm(`Xác nhận tạo hũ cho "${name}"?\nHệ thống yêu cầu chuyển trước 50.000đ phí lọc hồ sơ (không hoàn trả) vào tài khoản chủ web để kích hoạt.`);
+            if(!confirmPay) return;
+
+            let newHu = {
+                id: Date.now(),
+                name: name,
+                cccd: cccd + " (Đã duyệt CCCD ✅)",
+                stk: stk,
+                reason: reason,
+                target: target,
+                current: 0,
+                createdAt: new Date().getTime(),
+                status: 'active',
+                dailyLogs: []
+            };
+
+            hũNợList.unshift(newHu);
+            localStorage.setItem('hũ_nợ_list', JSON.stringify(hũNợList));
+            alert("🎉 Khởi tạo hũ thành công! Hũ của bạn đã xuất hiện trên Thùng Công Đức cho mọi người chung tay giúp đỡ.");
+            location.reload();
         }
 
         function renderDonorDashboard() {
@@ -242,7 +261,7 @@
                             <div>
                                 <div class="font-bold text-white text-sm flex items-center gap-1">
                                     ${hũ.name} 
-                                    <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">✔ CCCD</span>
+                                    <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">✔ CCCD thật</span>
                                 </div>
                                 <div class="text-[11px] text-slate-400 mt-0.5">${hũ.reason}</div>
                             </div>
@@ -273,13 +292,13 @@
                             <span class="text-[10px] text-slate-400">Chọn hũ tùy tâm</span>
                         </div>
 
-                        <div class="space-y-3 max-h-[52vh] overflow-y-auto pr-1">
+                        <div class="space-y-3 max-h-[55vh] overflow-y-auto pr-1">
                             ${listHTML}
                         </div>
                     </div>
 
                     <div class="bg-slate-950/60 border border-slate-800 p-3 rounded-xl text-[11px] text-slate-400">
-                        💡 <strong>Quyền lợi người cho:</strong> Sau 72h hũ không đầy, bạn có thể rút lại tiền hoặc chuyển sang hũ khác đang cần gấp. Tiền cho đi là phúc đức tích lũy!
+                        💡 <strong>Lưu ý:</strong> Phí 50k khởi tạo được chủ web cam kết chịu trách nhiệm pháp lý lọc tài khoản minh bạch. Tiền gieo duyên sẽ tự động nổ về STK người nhận khi đủ 100%.
                     </div>
                 </div>
             `;
