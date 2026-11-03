@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hũ Tương Trợ Cộng Đồng - Ứng Dụng Chính Thức</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-between p-4">
+
+    <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col min-h-[85vh]">
+        
+        <header class="bg-gradient-to-r from-red-600 to-orange-600 p-6 text-center text-white relative">
+            <h1 class="text-2xl font-black tracking-wider uppercase">Hũ Tương Trợ 💣</h1>
+            <p class="text-xs text-orange-100 mt-1 opacity-90">Hệ thống tài chính tương trợ trực tuyến</p>
+            <button onclick="resetRole()" class="absolute top-4 right-4 text-[10px] bg-black/30 hover:bg-black/50 px-2 py-1 rounded-full transition text-slate-200">Đổi vai trò</button>
+        </header>
+
+        <main id="app-content" class="p-5 flex-1 flex flex-col justify-between">
+            <!-- Render bằng JS -->
+        </main>
+
+        <footer class="bg-slate-950/50 py-3 px-6 text-center text-xs text-slate-500 border-t border-slate-800/60">
+            Hệ thống Quản lý Độc quyền &copy; 2026
+        </footer>
+    </div>
+
+    <!-- MODAL HIỂN THỊ MÃ QR CHUYỂN KHOẢN -->
+    <div id="qr-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 w-full max-w-sm rounded-3xl p-6 text-center space-y-4 shadow-2xl">
+            <h3 class="text-base font-bold text-orange-400"> quét mã QR Chuyển Khoản </h3>
+            <p class="text-[11px] text-slate-300">Sử dụng App Ngân hàng bất kỳ để quét mã thanh toán chính xác:</p>
+            
+            <div class="bg-white p-3 rounded-2xl inline-block shadow-inner">
+                <img id="qr-image" src="" alt="VietQR" class="w-52 h-52 mx-auto rounded-lg object-contain">
+            </div>
+
+            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-left space-y-1 text-xs">
+                <div class="text-slate-400">Ngân hàng: <b class="text-white">MB Bank</b></div>
+                <div class="text-slate-400">Số tài khoản: <b class="text-orange-400 select-all">06399669996699</b></div>
+                <div class="text-slate-400">Số tiền: <b id="qr-amount-text" class="text-emerald-400">0đ</b></div>
+                <div class="text-slate-400">Nội dung: <b id="qr-content-text" class="text-white">...</b></div>
+            </div>
+
+            <div class="flex gap-2">
+                <button onclick="closeQrModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-xl text-xs transition">Hủy bỏ</button>
+                <button onclick="confirmQrPayment()" class="flex-1 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 text-white font-bold py-2.5 rounded-xl text-xs shadow transition">Đã chuyển khoản xong ✅</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ================= TÀI KHOẢN CỦA HẰNG =================
+        const HOST_BANK_INFO = {
+            bankName: "MB Bank",
+            accountNumber: "06399669996699",
+            accountOwner: "LAM DIEM HANG" // Thay tên chủ tài khoản nếu cần
+        };
+        // =======================================================
+
+        let currentRole = localStorage.getItem('app_role') || null;
+        let hasAgreedTerms = localStorage.getItem('app_terms') === 'true';
+        let pendingAction = null; // Lưu tạm action khi quét QR xong
+
+        let hũNợList = JSON.parse(localStorage.getItem('hũ_nợ_list')) || [
+            {
+                id: 1,
+                name: "Nguyễn Văn A",
+                cccd: "079203001234",
+                phone: "0912345678",
+                stk: "MB Bank - 06399669996699",
+                reason: "Kẹt vốn kinh doanh nhỏ dịp cận kề cần hỗ trợ gấp.",
+                target: 1500000,
+                current: 1200000,
+                status: 'active',
+                donors: [],
+                connectedPhones: []
+            }
+        ];
+
+        function renderApp() {
+            const container = document.getElementById('app-content');
+            
+            if (!hasAgreedTerms) {
+                container.innerHTML = renderTermsScreen();
+                return;
+            }
+
+            if (!currentRole) {
+                container.innerHTML = renderRoleSelector();
+                return;
+            }
+
+            if (currentRole === 'borrower') {
+                container.innerHTML = renderBorrowerDashboard();
+            } else if (currentRole === 'donor') {
+                container.innerHTML = renderDonorDashboard();
+            }
+        }
+
+        function renderTermsScreen() {
+            return `
+                <div class="space-y-4 flex flex-col h-full justify-between">
+                    <div>
+                        <h2 class="text-base font-bold text-orange-500 mb-2 flex items-center gap-2">
+                            <span>📜</span> CAM KẾT THANH TOÁN TỰ ĐỘNG
+                        </h2>
+                        <div class="space-y-2 text-[11px] text-slate-300 max-h-[48vh] overflow-y-auto pr-1 bg-slate-950/40 p-3 rounded-xl border border-slate-800 leading-relaxed">
+                            <p>1. <strong>Chuyển khoản trực tiếp:</strong> Mọi giao dịch phí lọc hoặc gieo duyên đều phải quét mã QR chuyển vào tài khoản chính chủ của hệ thống: <b>MB Bank - 06399669996699</b>.</p>
+                            <p>2. <strong>Xác thực danh tính:</strong> Bắt buộc nhập đúng Họ Tên thật, CCCD đủ 12 số và SĐT chính chủ.</p>
+                            <p>3. <strong>Không hoàn trả phí lọc:</strong> Phí 50.000đ lọc hồ sơ không được hoàn lại dưới mọi hình thức.</p>
+                            <p>4. <strong>Kỷ luật hệ thống:</strong> Bất kỳ hành vi gian lận hoặc bấm xác nhận ảo khi chưa chuyển tiền sẽ bị khóa thiết bị vĩnh viễn.</p>
+                        </div>
+                    </div>
+
+                    <button onclick="acceptTerms()" class="w-full bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 text-white font-bold py-3.5 rounded-xl shadow-lg transition active:scale-95 text-xs">
+                        Tôi Đồng Ý & Bắt Buộc Tuân Thủ 🛡️
+                    </button>
+                </div>
+            `;
+        }
+
+        function acceptTerms() {
+            hasAgreedTerms = true;
+            localStorage.setItem('app_terms', 'true');
+            renderApp();
+        }
+
+        function renderRoleSelector() {
+            return `
+                <div class="flex flex-col justify-center items-center h-full py-8 space-y-5 text-center">
+                    <div class="space-y-1">
+                        <h2 class="text-lg font-bold text-white">Chọn Vai Trò Hoạt Động</h2>
+                        <p class="text-xs text-slate-400">Thiết bị liên kết chặt chẽ với hệ thống giao dịch QR.</p>
+                    </div>
+
+                    <div class="w-full space-y-3">
+                        <button onclick="selectRole('borrower')" class="w-full bg-slate-800 border border-slate-700 p-4 rounded-2xl flex items-center justify-between group transition">
+                            <div class="text-left">
+                                <div class="font-bold text-orange-400 text-sm">Người Xin Hũ (Tài Chính)</div>
+                                <div class="text-[11px] text-slate-400 mt-0.5">Quét QR nộp 50k phí lọc, xác thực CCCD & STK thật</div>
+                            </div>
+                            <span class="text-xl">🛡️</span>
+                        </button>
+
+                        <button onclick="selectRole('donor')" class="w-full bg-slate-800 border border-slate-700 p-4 rounded-2xl flex items-center justify-between group transition">
+                            <div class="text-left">
+                                <div class="font-bold text-emerald-400 text-sm">Mạnh Thường Quân (Gieo Duyên)</div>
+                                <div class="text-[11px] text-slate-400 mt-0.5">Quét QR chuyển tiền trực tiếp hỗ trợ hũ tài chính</div>
+                            </div>
+                            <span class="text-xl">🎁</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectRole(role) {
+            currentRole = role;
+            localStorage.setItem('app_role', role);
+            renderApp();
+        }
+
+        function resetRole() {
+            const pin = prompt("Nhập mã PIN hệ thống để đổi vai trò (Mặc định: 1234):");
+            if (pin === "1234") {
+                localStorage.removeItem('app_role');
+                currentRole = null;
+                renderApp();
+            }
+        }
+
+        function renderBorrowerDashboard() {
+            let myHu = hũNợList[0];
+            let percent = Math.min(100, Math.round((myHu.current / myHu.target) * 100));
+
+            return `
+                <div class="space-y-3 flex flex-col justify-between h-full">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <h2 class="font-bold text-xs text-orange-400">📊 Trạng Thái Hũ Của Bạn</h2>
+                            <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-medium">Đã Liên Kết MB Bank ✅</span>
+                        </div>
+
+                        <div class="bg-slate-800/80 border border-slate-700 p-3.5 rounded-2xl space-y-2.5">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-400">Tiền đã nhận / Mục tiêu:</span>
+                                <span class="font-bold text-white">${myHu.current.toLocaleString()}đ / ${myHu.target.toLocaleString()}đ (${percent}%)</span>
+                            </div>
+                            <div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-700">
+                                <div class="bg-gradient-to-r from-orange-500 to-emerald-400 h-full rounded-full transition-all" style="width: ${percent}%"></div>
+                            </div>
+                            <div class="text-[11px] text-slate-400 flex justify-between pt-1 border-t border-slate-700/50">
+                                <span>🏦 STK Nhận: <b class="text-orange-300">${myHu.stk}</b></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="openCreateHuModal()" class="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 rounded-xl text-xs shadow">
+                        + Tạo Hũ Mới (Quét QR nộp 50k phí lọc) 🛡️
+                    </button>
+                </div>
+            `;
+        }
+
+        // HÀM HIỂN THỊ QR THANH TOÁN PHÍ LỌC 50K
+        function openCreateHuModal() {
+            let name = prompt("1. Nhập đầy đủ HỌ VÀ TÊN THẬT:");
+            if (!name || name.trim().length < 3 || !name.includes(" ")) {
+                return alert("❌ Lỗi: Vui lòng nhập đúng Họ và Tên thật (có dấu, tối thiểu 2 từ)!");
+            }
+
+            let cccd = prompt("2. Nhập số CCCD (Chính xác 12 chữ số):");
+            if (!cccd || cccd.trim().length !== 12 || isNaN(cccd)) {
+                return alert("❌ Lỗi: Số CCCD không hợp lệ! Bắt buộc đúng 12 chữ số.");
+            }
+
+            let phone = prompt("3. Nhập Số Điện Thoại chính chủ (10 số, bắt đầu bằng 0):");
+            if (!phone || phone.trim().length !== 10 || !phone.startsWith("0") || isNaN(phone)) {
+                return alert("❌ Lỗi: Số điện thoại không hợp lệ!");
+            }
+
+            let stk = prompt("4. Nhập Tên Ngân hàng + Số tài khoản nhận tiền chính chủ (Ví dụ: MB 06399669996699):");
+            if (!stk || stk.trim().length < 6 || !stk.includes(" ")) {
+                return alert("❌ Lỗi: Định dạng tài khoản ngân hàng không hợp lệ!");
+            }
+
+            let target = parseInt(prompt("5. Nhập số tiền cần xin (Tối đa 2.000.000đ):", "1000000"));
+            if (isNaN(target) || target <= 0 || target > 2000000) {
+                return alert("❌ Lỗi: Số tiền xin vượt quá giới hạn 2.000.000đ!");
+            }
+
+            let reason = prompt("6. Nêu hoàn cảnh khó khăn thực tế:");
+            if (!reason || reason.trim().length < 10) {
+                return alert("❌ Lỗi: Vui lòng mô tả chi tiết hoàn cảnh tối thiểu 10 ký tự!");
+            }
+
+            // Lưu dữ liệu tạm để chờ quét QR xong mới đẩy vào danh sách
+            pendingAction = {
+                type: 'create_hu',
+                data: {
+                    id: Date.now(),
+                    name: name.trim(),
+                    cccd: cccd.trim(),
+                    phone: phone.trim(),
+                    stk: stk.trim(),
+                    reason: reason.trim(),
+                    target: target,
+                    current: 0,
+                    status: 'active',
+                    donors: [],
+                    connectedPhones: []
+                }
+            };
+
+            // Hiển thị mã QR nộp 50k phí lọc vào TK 06399669996699 MB
+            showVietQR(50000, `Phi loc ho so ${phone.trim()}`);
+        }
+
+        function renderDonorDashboard() {
+            let listHTML = hũNợList.map(hũ => {
+                let percent = Math.min(100, Math.round((hũ.current / hũ.target) * 100));
+                let isFull = hũ.current >= hũ.target;
+                return `
+                    <div class="bg-slate-800/80 border border-slate-700 p-3.5 rounded-2xl space-y-2">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="font-bold text-white text-xs">${hũ.name} <span class="text-[9px] text-emerald-400">✔ CCCD Chuẩn</span></div>
+                                <div class="text-[10px] text-slate-400">${hũ.reason}</div>
+                                <div class="text-[9px] text-orange-300 mt-0.5">🏦 Nhận tại: ${hũ.stk}</div>
+                            </div>
+                            <span class="text-xs font-bold text-orange-400">${percent}%</span>
+                        </div>
+
+                        <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden">
+                            <div class="bg-gradient-to-r from-orange-500 to-emerald-400 h-full" style="width: ${percent}%"></div>
+                        </div>
+
+                        <div class="flex justify-between items-center text-[10px] text-slate-400 pt-1">
+                            <span>Đã nhận: <b class="text-white">${hũ.current.toLocaleString()}đ</b></span>
+                            ${isFull ? '<span class="text-emerald-400 font-bold">Đã Đủ Hũ</span>' : `<button onclick="initDonate(${hũ.id})" class="bg-orange-500 text-white font-bold px-2.5 py-1 rounded-lg">Gieo Duyên Qua QR 💳</button>`}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="space-y-3 flex flex-col h-full justify-between">
+                    <div>
+                        <h2 class="font-bold text-xs text-emerald-400 mb-2">🎁 Thùng Công Đức (Chuyển Khoản Qua QR MB)</h2>
+                        <div class="space-y-2.5 max-h-[55vh] overflow-y-auto pr-1">${listHTML}</div>
+                    </div>
+                    <div class="bg-slate-950/60 border border-slate-800 p-2.5 rounded-xl text-[10px] text-slate-400">
+                        💡 <strong>Lưu ý:</strong> Quét mã QR chuyển thẳng vào TK MB: <b>06399669996699</b>. Đủ 100% hệ thống tự động khóa và giải ngân về người nhận.
+                    </div>
+                </div>
+            `;
+        }
+
+        function initDonate(id) {
+            let hu = hũNợList.find(h => h.id === id);
+            
+            let donorName = prompt("1. Nhập Họ và Tên thật của bạn:");
+            if (!donorName || donorName.trim().length < 3) {
+                return alert("❌ Lỗi: Vui lòng nhập đúng Họ và Tên!");
+            }
+
+            let donorPhone = prompt("2. Nhập SĐT chính chủ (Đủ 10 số):");
+            if (!donorPhone || donorPhone.trim().length !== 10 || !donorPhone.startsWith("0")) {
+                return alert("❌ Lỗi: Số điện thoại không hợp lệ!");
+            }
+
+            let amount = parseInt(prompt("3. Nhập số tiền muốn gieo duyên thực tế (VNĐ):", "50000"));
+            if (!amount || isNaN(amount) || amount <= 0) {
+                return alert("❌ Lỗi: Số tiền gieo duyên không hợp lệ!");
+            }
+
+            pendingAction = {
+                type: 'donate',
+                fundId: id,
+                donorName: donorName.trim(),
+                donorPhone: donorPhone.trim(),
+                amount: amount
+            };
+
+            // Hiển thị mã QR chuyển khoản gieo duyên vào TK 06399669996699 MB
+            showVietQR(amount, `Gieo duyen hu ${id}`);
+        }
+
+        // HÀM TẠO VÀ HIỂN THỊ VIETQR TỰ ĐỘNG
+        function showVietQR(amount, content) {
+            const bankId = "MB";
+            const accountNo = "06399669996699";
+            const template = "compact2"; // Kiểu hiển thị mã QR gọn đẹp
+            
+            // Link API VietQR chuẩn tự động sinh mã
+            const qrUrl = `https://img.vietqr.io/image/${bankId}-${accountNo}-${template}.png?amount=${amount}&addInfo=${encodeURIComponent(content)}&accountName=${encodeURIComponent(HOST_BANK_INFO.accountOwner)}`;
+            
+            document.getElementById('qr-image').src = qrUrl;
+            document.getElementById('qr-amount-text').innerText = amount.toLocaleString() + "đ";
+            document.getElementById('qr-content-text').innerText = content;
+            
+            document.getElementById('qr-modal').classList.remove('hidden');
+        }
+
+        function closeQrModal() {
+            document.getElementById('qr-modal').classList.add('hidden');
+            pendingAction = null;
+        }
+
+        // XỬ LÝ KHI NGƯỜI DÙNG BẤM "ĐÃ CHUYỂN KHOẢN XONG"
+        function confirmQrPayment() {
+            if (!pendingAction) return;
+
+            if (pendingAction.type === 'create_hu') {
+                hũNợList.unshift(pendingAction.data);
+                localStorage.setItem('hũ_nợ_list', JSON.stringify(hũNợList));
+                alert("🎉 Đã xác nhận nộp phí lọc 50k vào TK MB (06399669996699)! Hũ của bạn đã hiển thị thành công lên hệ thống.");
+            } 
+            else if (pendingAction.type === 'donate') {
+                let hu = hũNợList.find(h => h.id === pendingAction.fundId);
+                if (hu) {
+                    hu.current += pendingAction.amount;
+                    hu.donors.push({
+                        name: pendingAction.donorName,
+                        amount: pendingAction.amount,
+                        phone: pendingAction.donorPhone
+                    });
+
+                    if (hu.current >= hu.target) {
+                        hu.current = hu.target;
+                        hu.status = 'success';
+                        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+                        alert(`🎉 Hũ đã đủ 100% (${hu.target.toLocaleString()}đ)!\n💥 TỰ ĐỘNG GIẢI NGÂN: Tiền chuyển từ TK MB (06399669996699) về thẳng STK người nhận: ${hu.stk}`);
+                    } else {
+                        alert(`❤️ Gieo duyên thành công! Hệ thống đã ghi nhận ${pendingAction.amount.toLocaleString()}đ chuyển vào TK MB của bạn.`);
+                    }
+
+                    localStorage.setItem('hũ_nợ_list', JSON.stringify(hũNợList));
+                }
+            }
+
+            closeQrModal();
+            renderApp();
+        }
+
+        renderApp();
+    </script>
+</body>
+</html>
